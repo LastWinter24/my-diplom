@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: transparent;
+}
+
+
+.custom-html-content p {
+  margin-bottom: 0.75rem;
+}
+
+.custom-html-content strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+.custom-html-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.custom-html-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.custom-html-content li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.custom-quill-container .ql-toolbar {
+  border: none !important;
+  border-bottom: 2px solid #f3f4f6 !important; 
+  background-color: rgba(249, 250, 251, 0.5) !important; 
+  padding: 4px 16px 12px 16px !important;
+}
+
+.custom-quill-container .ql-container {
+  border: none !important;
+  font-family: inherit !important;
+  font-size: 1rem !important;
+  background-color: white; /* Чистый белый фон для текста */
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+
+.custom-quill-container .ql-editor {
+  min-height: 140px; 
+  padding: 1rem !important;
+  color: #374151; 
+}
+
+.custom-quill-container .ql-editor.ql-blank::before {
+  font-style: normal;
+  color: #9ca3af; 
+}
