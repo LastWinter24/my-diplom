@@ -1,0 +1,191 @@
+// backend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ПЕРЕЧИСЛЕНИЯ (Enums)
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  ADMIN
+  CHEF
+  SUPER_ADMIN
+}
+
+enum FeedbackType {
+  SUGGESTION
+  GRATITUDE
+  PROBLEM
+}
+
+enum FeedbackPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum FeedbackStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum KnowledgeCategory {
+  IT
+  HR
+  POLICIES
+  FAQ
+}
+
+// Статусы для смен (отслеживание прихода/ухода)
+enum ShiftStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  MISSED
+}
+
+// МОДЕЛИ (Таблицы)
+
+model User {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  passwordHash String
+  fullName     String
+  department   String? 
+  position     String? 
+  phone        String?
+  role         Role    @default(EMPLOYEE)
+  avatarUrl    String?
+
+  //Для расчета зарплаты и панели администратора
+  hourlyRate   Float   @default(0)
+  isActive     Boolean @default(true)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Связи (Relations) - Prisma использует их для связывания таблиц под капотом
+  news             News[]
+  shifts           Shift[]             @relation("EmployeeShifts")
+  shiftsCreated    Shift[]             @relation("ManagerShifts")
+  feedbacks        Feedback[]
+  feedbackComments FeedbackComment[]
+  knowledgeMaterials KnowledgeMaterial[]
+
+  @@map("users") // Называем таблицу в БД в нижнем регистре во множественном числе
+}
+
+model News {
+  id          String   @id @default(uuid())
+  title       String
+  content     String     
+  imageUrl    String?  
+  publishedAt DateTime @default(now())
+
+  // Связь с автором (User)
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("news")
+}
+
+model Shift {
+  id          String   @id @default(uuid())
+  department  String
+  date        DateTime @db.Date 
+  startTime   String   
+  endTime     String   
+
+  // Отслеживание реального времени и биржа смен
+  status          ShiftStatus @default(SCHEDULED)
+  actualStartTime DateTime?
+  actualEndTime   DateTime?
+  isLookingForSwap Boolean    @default(false)
+
+  // Кто работает в эту смену
+  employeeId  String
+  employee    User     @relation("EmployeeShifts", fields: [employeeId], references: [id])
+
+  // Кто создал/назначил смену (Менеджер)
+  createdById String
+  createdBy   User     @relation("ManagerShifts", fields: [createdById], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("shifts")
+}
+
+model Feedback {
+  id          String           @id @default(uuid())
+  type        FeedbackType
+  title       String
+  content     String
+  priority    FeedbackPriority @default(MEDIUM)
+  status      FeedbackStatus   @default(NEW)
+  isAnonymous Boolean          @default(false)
+
+  // Автор может быть NULL, если isAnonymous = true
+  authorId    String?
+  author      User?            @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  comments    FeedbackComment[]
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("feedbacks")
+}
+
+model FeedbackComment {
+  id         String   @id @default(uuid())
+  content    String
+
+  feedbackId String
+  // onDelete: Cascade означает, что при удалении тикета удалятся и все его комментарии
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("feedback_comments")
+}
+
+model KnowledgeMaterial {
+  id        String            @id @default(uuid())
+  title     String
+  category  KnowledgeCategory
+  content   String?            
+  pdfUrl    String?           
+
+  authorId  String
+  author    User              @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@map("knowledge_materials")
+}
+
+// Таблица для хранения контента страниц (Главная страница и т.д.)
+model PageContent {
+  id        String   @id @default(uuid())
+  pageName  String   @unique 
+  content   String   
+  updatedAt DateTime @updatedAt
+}
