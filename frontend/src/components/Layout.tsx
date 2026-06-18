@@ -54,7 +54,7 @@ export default function Layout() {
     tasksHistoryLimit.setDate(tasksHistoryLimit.getDate() - 14);
 
     try {
-      const newsRes = await fetch('http://localhost:3000/news', { headers });
+      const newsRes = await fetch('/api/news', { headers });
       if (newsRes.ok) {
         const newsData = await newsRes.json();
         newsData.forEach((item: any) => {
@@ -72,7 +72,7 @@ export default function Layout() {
     } catch (e) { }
 
     try {
-      const tasksRes = await fetch('http://localhost:3000/tasks/all', { headers });
+      const tasksRes = await fetch('/api/tasks/all', { headers });
       if (tasksRes.ok) {
         const tasksData = await tasksRes.json();
         const isManagement = roleToCheck === 'SUPER_ADMIN' || roleToCheck === 'ADMIN' || roleToCheck === 'MANAGER';
@@ -144,7 +144,7 @@ export default function Layout() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const profileRes = await fetch('http://localhost:3000/profile', {
+        const profileRes = await fetch('/api/profile', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -401,7 +401,7 @@ export default function Layout() {
 
           <div onClick={() => navigate('/profile')} className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer hover:ring-4 hover:ring-primary-100 transition-all shadow-sm border border-gray-100 overflow-hidden bg-white flex items-center justify-center flex-shrink-0" title="Перейти в профиль">
             {avatarUrl ? (
-              <img src={`http://localhost:3000${avatarUrl}`} alt="Аватар пользователя" className="w-full h-full object-cover" />
+              <img src={`/api${avatarUrl}`} alt="Аватар пользователя" className="w-full h-full object-cover" />
             ) : (
               <span className="font-bold text-primary-600 text-sm md:text-lg">{userName ? userName.charAt(0).toUpperCase() : '👤'}</span>
             )}

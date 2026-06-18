@@ -57,7 +57,7 @@ export default function Dashboard() {
   const [searchResults, setSearchResults] = useState<any[]>(DEFAULT_CITIES);
 
   useEffect(() => {
-    fetch('http://localhost:3000/pages/home')
+    fetch('/api/pages/home')
       .then(res => res.json())
       .then(resData => {
         if (resData && resData.content) {
@@ -425,7 +425,7 @@ export default function Dashboard() {
               {management.length > 0 ? management.map((manager: any) => (
                 <div key={manager.id} className="flex items-center space-x-4 p-2 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
                   {manager.avatarUrl ? (
-                    <img src={`http://localhost:3000${manager.avatarUrl}`} className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-100" alt={manager.fullName} />
+                    <img src={`/api${manager.avatarUrl}`} className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-100" alt={manager.fullName} />
                   ) : (
                     <div className="w-12 h-12 rounded-full flex flex-shrink-0 items-center justify-center font-bold text-lg bg-primary-100 text-primary-600">
                       {manager.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2)}

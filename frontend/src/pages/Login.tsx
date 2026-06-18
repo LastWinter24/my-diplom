@@ -53,7 +53,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -83,7 +83,7 @@ export default function Login() {
 
     try {
       //Просим бэкенд сгенерировать и отправить код на почту
-      const response = await fetch('http://localhost:3000/auth/send-code', {
+      const response = await fetch('/api/auth/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -110,7 +110,7 @@ export default function Login() {
 
     try {
       //Отправляем все данные + КОД на финальную регистрацию
-      const regResponse = await fetch('http://localhost:3000/auth/register', {
+      const regResponse = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, fullName, code: verificationCode }),
@@ -118,7 +118,7 @@ export default function Login() {
 
       if (regResponse.ok) {
         // Если всё супер, сразу логинимся
-        const loginRes = await fetch('http://localhost:3000/auth/login', {
+        const loginRes = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),

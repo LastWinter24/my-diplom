@@ -86,12 +86,12 @@ export default function Tasks() {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const profileRes = await fetch('http://localhost:3000/profile', { headers: { 'Authorization': `Bearer ${token}` } });
+      const profileRes = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` } });
       if (profileRes.ok) {
         const profileData = await profileRes.json();
         setCurrentUser(profileData.fullName);
       }
-      const response = await fetch('http://localhost:3000/tasks/all', { headers: { 'Authorization': `Bearer ${token}` } });
+      const response = await fetch('/api/tasks/all', { headers: { 'Authorization': `Bearer ${token}` } });
       const data = await response.json();
       const sorted = data.sort((a: Task, b: Task) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setTasks(sorted);
@@ -104,7 +104,7 @@ export default function Tasks() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/tasks/create', {
+      const response = await fetch('/api/tasks/create', {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ title, content, type, priority })
       });
       if (response.ok) { setTitle(''); setContent(''); fetchData(); setIsFormOpen(false); }
@@ -118,7 +118,7 @@ export default function Tasks() {
       onConfirm: async () => {
         try {
           const token = localStorage.getItem('token');
-          const res = await fetch(`http://localhost:3000/tasks/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+          const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
           if (res.ok) setTasks(tasks.filter(t => t.id !== id)); else alert('Не удалось удалить заявку.');
         } catch (e) { alert('Ошибка при удалении.'); }
       }
@@ -131,7 +131,7 @@ export default function Tasks() {
   const handleSaveEdit = async (id: string) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+      const res = await fetch(`/api/tasks/${id}`, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ title: editTitle, content: editContent })
       });
       if (res.ok) {
@@ -218,7 +218,7 @@ export default function Tasks() {
 
                   <div className="flex items-center gap-3 pt-4 border-t border-gray-50 min-w-0">
                     {task.author ? (
-                      <>{task.author.avatarUrl ? <img src={`http://localhost:3000${task.author.avatarUrl}`} alt={task.author.fullName} className="w-8 h-8 rounded-full object-cover shadow-sm flex-shrink-0" /> : <div className="w-8 h-8 bg-primary-100 rounded-full flex flex-shrink-0 items-center justify-center font-bold text-primary-600 text-sm">{task.author.fullName.charAt(0).toUpperCase()}</div>}
+                      <>{task.author.avatarUrl ? <img src={`/api${task.author.avatarUrl}`} alt={task.author.fullName} className="w-8 h-8 rounded-full object-cover shadow-sm flex-shrink-0" /> : <div className="w-8 h-8 bg-primary-100 rounded-full flex flex-shrink-0 items-center justify-center font-bold text-primary-600 text-sm">{task.author.fullName.charAt(0).toUpperCase()}</div>}
                       <span className="text-sm font-medium text-gray-700 min-w-0 flex-1 break-words">{task.author.fullName}{isMyTask && <span className="ml-2 text-[10px] bg-primary-50 text-primary-500 px-2 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Вы</span>}</span></>
                     ) : (
                       <><div className="w-8 h-8 bg-gray-100 rounded-full flex flex-shrink-0 items-center justify-center font-bold text-gray-400 text-sm">?</div><span className="text-sm font-medium text-gray-400 italic">Анонимно</span></>

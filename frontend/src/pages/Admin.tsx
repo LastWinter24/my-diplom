@@ -57,7 +57,7 @@ export default function Admin() {
   const fetchCurrentUser = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/profile', {
+      const response = await fetch('/api/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -71,7 +71,7 @@ export default function Admin() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/auth/users', {
+      const response = await fetch('/api/auth/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -95,7 +95,7 @@ export default function Admin() {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/auth/users/${userId}`, {
+      const response = await fetch(`/api/auth/users/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ [field]: trimmedValue })
@@ -116,7 +116,7 @@ export default function Admin() {
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/auth/users/${userId}`, {
+      const response = await fetch(`/api/auth/users/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ role: newRole })
@@ -137,7 +137,7 @@ export default function Admin() {
   const handleStatusChange = async (userId: string, newStatus: boolean) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/auth/users/${userId}/status`, {
+      const response = await fetch(`/api/auth/users/${userId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ isActive: newStatus })
@@ -222,7 +222,7 @@ export default function Admin() {
                     <td className="p-5">
                       <div className="flex items-center gap-4">
                         {user.avatarUrl ? (
-                          <img src={`http://localhost:3000${user.avatarUrl}`} className="w-12 h-12 rounded-full object-cover border border-gray-100 flex-shrink-0" alt="" />
+                          <img src={`/api${user.avatarUrl}`} className="w-12 h-12 rounded-full object-cover border border-gray-100 flex-shrink-0" alt="" />
                         ) : (
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 ${getAvatarColor(user.fullName)}`}>
                             {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}

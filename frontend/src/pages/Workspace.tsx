@@ -161,7 +161,7 @@ export default function Workspace() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const response = await fetch('http://localhost:3000/profile', { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` } });
         if (response.ok) { const data = await response.json(); setUserRole(data.role); if (data.role === 'CHEF') setActiveTab('menu'); }
       } catch (error) { }
     };
@@ -180,7 +180,7 @@ export default function Workspace() {
 
   const fetchHomeContent = async () => {
     try {
-      const response = await fetch('http://localhost:3000/pages/home');
+      const response = await fetch('/api/pages/home');
       const data = await response.json();
       if (data && data.content) {
         try {
@@ -205,7 +205,7 @@ export default function Workspace() {
 
   const fetchFeedbacks = async () => {
     try {
-      const res = await fetch('http://localhost:3000/pages/feedback');
+      const res = await fetch('/api/pages/feedback');
       const data = await res.json();
       if (data && data.content) setFeedbacks(JSON.parse(data.content));
       else setFeedbacks([]);
@@ -224,7 +224,7 @@ export default function Workspace() {
         setFeedbacks(updated);
         try {
           const token = localStorage.getItem('token');
-          await fetch('http://localhost:3000/pages/feedback', { 
+          await fetch('/api/pages/feedback', { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
             body: JSON.stringify({ content: JSON.stringify(updated) }) 
@@ -240,7 +240,7 @@ export default function Workspace() {
     try {
       const token = localStorage.getItem('token');
       const headers = { 'Authorization': `Bearer ${token}` };
-      const [empRes, shiftsRes, tasksRes] = await Promise.all([ fetch('http://localhost:3000/shifts/employees', { headers }), fetch('http://localhost:3000/shifts/all', { headers }), fetch('http://localhost:3000/tasks/all', { headers }).catch(() => null) ]);
+      const [empRes, shiftsRes, tasksRes] = await Promise.all([ fetch('/api/shifts/employees', { headers }), fetch('/api/shifts/all', { headers }), fetch('/api/tasks/all', { headers }).catch(() => null) ]);
       if (empRes.ok) setEmployees(await empRes.json());
       if (shiftsRes.ok) setAllShifts(await shiftsRes.json());
       if (tasksRes && tasksRes.ok) {
@@ -255,7 +255,7 @@ export default function Workspace() {
     try {
       const token = localStorage.getItem('token');
       const payload = JSON.stringify({ content: JSON.stringify(homeData) });
-      const response = await fetch('http://localhost:3000/pages/home', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: payload });
+      const response = await fetch('/api/pages/home', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: payload });
       if (response.ok) toast.success('Изменения успешно сохранены! ✨'); else toast.error('Ошибка сохранения изменений');
     } catch (err) { toast.error('Ошибка соединения'); } finally { setIsSavingHome(false); }
   };
@@ -335,27 +335,27 @@ export default function Workspace() {
   const handleAssignShift = async (e: React.FormEvent) => {
     e.preventDefault(); if (!shiftEmployeeId) return toast.error('Выберите сотрудника!');
     try {
-      const response = await fetch('http://localhost:3000/shifts/assign', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: JSON.stringify({ employeeId: shiftEmployeeId, department: shiftDepartment, date: new Date(shiftDate).toISOString(), startTime: shiftStartTime, endTime: shiftEndTime }) });
+      const response = await fetch('/api/shifts/assign', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: JSON.stringify({ employeeId: shiftEmployeeId, department: shiftDepartment, date: new Date(shiftDate).toISOString(), startTime: shiftStartTime, endTime: shiftEndTime }) });
       if (response.ok) { toast.success('Смена назначена!'); setShiftDate(''); setShiftEmployeeId(''); fetchEmployeesAndShifts(); } else toast.error('Ошибка назначения');
     } catch (err) { toast.error('Ошибка'); }
   };
 
   const requestDeleteShift = (id: string) => { setConfirmModal({ isOpen: true, title: 'Удаление смены', message: 'Вы уверены, что хотите удалить эту смену?', confirmBtnText: 'Удалить смену', confirmBtnColor: 'bg-red-500 hover:bg-red-600 shadow-red-500/30', onConfirm: () => executeDeleteShift(id) }); };
   const executeDeleteShift = async (id: string) => {
-    try { const res = await fetch(`http://localhost:3000/shifts/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }); if (res.ok) { toast.success('Удалена'); fetchEmployeesAndShifts(); } else toast.error('Ошибка'); } catch (err) {}
+    try { const res = await fetch(`/api/shifts/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }); if (res.ok) { toast.success('Удалена'); fetchEmployeesAndShifts(); } else toast.error('Ошибка'); } catch (err) {}
   };
 
   const requestResolveRequest = (req: Task) => { setConfirmModal({ isOpen: true, title: 'Подтверждение заявки', message: 'Одобрить этот запрос? Смена перейдет на Биржу.', confirmBtnText: 'Подтвердить', confirmBtnColor: 'bg-green-500 hover:bg-green-600 shadow-green-500/30', onConfirm: () => executeResolveRequest(req) }); };
   const executeResolveRequest = async (req: Task) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/tasks/${req.id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status: 'RESOLVED' }) });
+      const res = await fetch(`/api/tasks/${req.id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status: 'RESOLVED' }) });
       if (res.ok) {
         if ((req.title.includes('БОЛЬНИЧНЫЙ') || req.title.includes('ПОИСК ЗАМЕНЫ')) && req.author) {
           const dateMatch = req.title.match(/(\d{2}\.\d{2}\.\d{4})/);
           if (dateMatch) {
             const targetShift = allShifts.find(s => s.employee.fullName === req.author?.fullName && ('0' + new Date(s.date).getDate()).slice(-2) + '.' + ('0' + (new Date(s.date).getMonth() + 1)).slice(-2) + '.' + new Date(s.date).getFullYear() === dateMatch[1]);
-            if (targetShift) await fetch(`http://localhost:3000/shifts/${targetShift.id}/swap-request`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } });
+            if (targetShift) await fetch(`/api/shifts/${targetShift.id}/swap-request`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } });
           }
         }
         setShiftRequests(prev => prev.filter(r => r.id !== req.id)); toast.success('Запрос одобрен! 🔄'); fetchEmployeesAndShifts(); 
@@ -407,7 +407,7 @@ export default function Workspace() {
                     <div className="absolute z-20 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl max-h-60 overflow-y-auto custom-scrollbar animate-fade-in">
                       {employees.map(emp => (
                         <div key={emp.id} onClick={() => { setShiftEmployeeId(emp.id); setIsShiftEmployeeDropdownOpen(false); }} className="p-3 hover:bg-primary-50 cursor-pointer flex items-center gap-3 transition-colors border-b border-gray-50 last:border-0">
-                          {emp.avatarUrl ? <img src={`http://localhost:3000${emp.avatarUrl}`} className="w-10 h-10 rounded-full object-cover" alt="" /> : <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${getAvatarColor(emp.fullName)}`}>{emp.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
+                          {emp.avatarUrl ? <img src={`/api${emp.avatarUrl}`} className="w-10 h-10 rounded-full object-cover" alt="" /> : <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${getAvatarColor(emp.fullName)}`}>{emp.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
                           <div><p className="font-bold text-gray-800 text-sm truncate">{emp.fullName}</p><p className="text-xs text-gray-500 truncate">{emp.position || getRoleNameInRussian(emp.role)}</p></div>
                         </div>
                       ))}
@@ -429,7 +429,7 @@ export default function Workspace() {
                   {shiftRequests.map(req => (
                     <div key={req.id} id={`req_${req.id}`} className="bg-white p-5 rounded-xl border border-red-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 scroll-mt-24">
                       <div className="flex gap-4 items-start min-w-0 flex-1">
-                        {req.author?.avatarUrl ? <img src={`http://localhost:3000${req.author.avatarUrl}`} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" /> : <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 ${getAvatarColor(req.author?.fullName || 'Аноним')}`}>{req.author?.fullName ? req.author.fullName.charAt(0).toUpperCase() : '👤'}</div>}
+                        {req.author?.avatarUrl ? <img src={`/api${req.author.avatarUrl}`} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" /> : <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 ${getAvatarColor(req.author?.fullName || 'Аноним')}`}>{req.author?.fullName ? req.author.fullName.charAt(0).toUpperCase() : '👤'}</div>}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-3 mb-1 flex-wrap"><span className="bg-red-100 text-red-700 text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider flex-shrink-0">Важно</span><span className="font-bold text-gray-900 break-words">{req.title}</span></div>
                           <p className="text-sm text-gray-600 mb-2 break-words whitespace-pre-wrap">{req.content}</p>
@@ -477,7 +477,7 @@ export default function Workspace() {
                         <tr key={emp.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors">
                           <td className="p-4 font-medium text-gray-900 sticky left-0 bg-white group-hover:bg-gray-50/50 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                             <div className="flex items-center gap-3">
-                              {emp.avatarUrl ? <img src={`http://localhost:3000${emp.avatarUrl}`} className="w-8 h-8 rounded-full object-cover" alt="" /> : <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${getAvatarColor(emp.fullName)}`}>{emp.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
+                              {emp.avatarUrl ? <img src={`/api${emp.avatarUrl}`} className="w-8 h-8 rounded-full object-cover" alt="" /> : <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${getAvatarColor(emp.fullName)}`}>{emp.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
                               <div className="min-w-0 flex-1"><p className="text-sm font-bold text-gray-800 truncate">{emp.fullName}</p><p className="text-[10px] text-gray-500 truncate">{emp.position || getRoleNameInRussian(emp.role)}</p></div>
                             </div>
                           </td>
@@ -507,7 +507,7 @@ export default function Workspace() {
                       <div key={shift.id} className={`border p-6 rounded-[1.5rem] shadow-sm relative group transition-all ${isPast ? 'bg-gray-50 opacity-75' : shift.isLookingForSwap ? 'bg-orange-50 border-orange-200 hover:shadow-md' : 'bg-white hover:shadow-md hover:border-primary-200'}`}>
                         <div className="flex justify-between items-start mb-4"><div className={`font-bold px-3 py-1.5 rounded-lg text-sm ${isPast ? 'bg-gray-200 text-gray-600' : shift.isLookingForSwap ? 'bg-orange-500 text-white' : 'bg-primary-50 text-primary-700'}`}>{dateObj.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' })}</div><div className="text-gray-500 font-bold bg-gray-100 px-3 py-1.5 rounded-lg text-sm flex-shrink-0">{shift.startTime} - {shift.endTime}</div></div>
                         <div className="flex items-center gap-3 mb-4 min-w-0">
-                          {shift.employee.avatarUrl ? <img src={`http://localhost:3000${shift.employee.avatarUrl}`} className="w-12 h-12 rounded-full object-cover flex-shrink-0" alt="" /> : <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 ${getAvatarColor(shift.employee.fullName)}`}>{shift.employee.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
+                          {shift.employee.avatarUrl ? <img src={`/api${shift.employee.avatarUrl}`} className="w-12 h-12 rounded-full object-cover flex-shrink-0" alt="" /> : <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 ${getAvatarColor(shift.employee.fullName)}`}>{shift.employee.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
                           <div className="min-w-0 flex-1"><h3 className="font-extrabold text-lg text-gray-900 truncate">{shift.employee.fullName}</h3><p className="text-gray-500 text-xs font-medium truncate">{shift.department} {shift.employee.position ? `• ${shift.employee.position}` : ''}</p></div>
                         </div>
                         <div className="text-[10px] uppercase tracking-wider text-gray-400 border-t border-gray-50 pt-3 flex items-center justify-between min-w-0"><span className="truncate">Назначил: <span className="font-bold text-gray-500">{shift.createdBy.fullName}</span></span>{shift.isLookingForSwap && <span className="text-orange-500 font-bold ml-2">На бирже</span>}</div>
@@ -617,7 +617,7 @@ export default function Workspace() {
                   {(homeData.management || []).map(manager => (
                     <div key={manager.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border">
                       <div className="flex items-center gap-4 min-w-0 flex-1">
-                        {manager.avatarUrl ? <img src={`http://localhost:3000${manager.avatarUrl}`} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" /> : <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm ${getAvatarColor(manager.fullName)}`}>{manager.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
+                        {manager.avatarUrl ? <img src={`/api${manager.avatarUrl}`} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" /> : <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm ${getAvatarColor(manager.fullName)}`}>{manager.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
                         <div className="min-w-0 flex-1"><p className="font-bold break-words truncate">{manager.fullName}</p><p className="text-xs text-gray-500 break-words truncate">{manager.position || 'Сотрудник'}</p></div>
                       </div>
                       <button onClick={() => handleRemoveManager(manager.id)} className="text-red-500 text-sm font-medium hover:underline flex-shrink-0 ml-4">Удалить</button>
@@ -632,7 +632,7 @@ export default function Workspace() {
                     <div className="absolute z-10 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl max-h-60 overflow-y-auto custom-scrollbar animate-fade-in">
                       {employees.map(emp => (
                         <div key={emp.id} onClick={() => handleAddManager(emp)} className="p-3 hover:bg-primary-50 cursor-pointer flex items-center gap-3 border-b border-gray-50">
-                          {emp.avatarUrl ? <img src={`http://localhost:3000${emp.avatarUrl}`} className="w-10 h-10 rounded-full object-cover flex-shrink-0" alt="" /> : <div className={`w-10 h-10 flex-shrink-0 rounded-full flex items-center justify-center font-bold text-sm ${getAvatarColor(emp.fullName)}`}>{emp.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
+                          {emp.avatarUrl ? <img src={`/api${emp.avatarUrl}`} className="w-10 h-10 rounded-full object-cover flex-shrink-0" alt="" /> : <div className={`w-10 h-10 flex-shrink-0 rounded-full flex items-center justify-center font-bold text-sm ${getAvatarColor(emp.fullName)}`}>{emp.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>}
                           <div className="min-w-0 flex-1"><p className="font-bold text-gray-800 text-sm truncate">{emp.fullName}</p><p className="text-xs text-gray-500 truncate">{emp.position || getRoleNameInRussian(emp.role)}</p></div>
                         </div>
                       ))}

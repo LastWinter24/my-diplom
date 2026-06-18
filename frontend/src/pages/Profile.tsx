@@ -58,7 +58,7 @@ export default function Profile() {
         const headers = { 'Authorization': `Bearer ${token}` };
         
         //Загружаем основные данные профиля
-        const response = await fetch('http://localhost:3000/profile', { headers });
+        const response = await fetch('/api/profile', { headers });
         let currentUserName = '';
         
         if (response.ok) {
@@ -72,13 +72,13 @@ export default function Profile() {
           currentUserName = data.fullName;
           
           if (data.avatarUrl) {
-            setAvatarUrl(`http://localhost:3000${data.avatarUrl}`);
+            setAvatarUrl(`/api${data.avatarUrl}`);
           }
         }
 
         //Загружаем статистику решенных задач
         try {
-          const tasksRes = await fetch('http://localhost:3000/tasks/my', { headers });
+          const tasksRes = await fetch('/api/tasks/my', { headers });
           if (tasksRes.ok) {
             const tasks = await tasksRes.json();
             const resolvedCount = tasks.filter((t: any) => t.status === 'RESOLVED').length;
@@ -90,7 +90,7 @@ export default function Profile() {
 
         //Загружаем статистику смен за текущий месяц
         try {
-          const shiftsRes = await fetch('http://localhost:3000/shifts/all', { headers });
+          const shiftsRes = await fetch('/api/shifts/all', { headers });
           if (shiftsRes.ok) {
             const allShifts = await shiftsRes.json();
             
@@ -155,7 +155,7 @@ export default function Profile() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/profile', {
+      const response = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,

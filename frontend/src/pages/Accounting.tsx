@@ -73,7 +73,7 @@ export default function Accounting() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/shifts/accounting?year=${year}&month=${month}`, {
+      const res = await fetch(`/api/shifts/accounting?year=${year}&month=${month}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -96,7 +96,7 @@ export default function Accounting() {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/shifts/accounting/${userId}/rate`, {
+      const res = await fetch(`/api/shifts/accounting/${userId}/rate`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ rate })
@@ -216,7 +216,7 @@ export default function Accounting() {
                     <td className="p-6">
                       <div className="flex items-center gap-4">
                         {rec.avatarUrl ? (
-                          <img src={`http://localhost:3000${rec.avatarUrl}`} className="w-12 h-12 rounded-full object-cover border border-gray-100 shadow-sm" alt="" />
+                          <img src={`/api${rec.avatarUrl}`} className="w-12 h-12 rounded-full object-cover border border-gray-100 shadow-sm" alt="" />
                         ) : (
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-sm ${getAvatarColor(rec.fullName)}`}>
                             {rec.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}

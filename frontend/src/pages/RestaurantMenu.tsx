@@ -38,7 +38,7 @@ export default function RestaurantMenu() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3000/pages/home')
+    fetch('/api/pages/home')
       .then(res => res.json())
       .then(data => {
         if (data && data.content) {
@@ -55,7 +55,7 @@ export default function RestaurantMenu() {
 
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('http://localhost:3000/profile', { headers: { Authorization: `Bearer ${token}` } })
+      fetch('/api/profile', { headers: { Authorization: `Bearer ${token}` } })
         .then(res => res.json())
         .then(data => { if (data.fullName) setUserName(data.fullName); })
         .catch(() => {});
@@ -71,7 +71,7 @@ export default function RestaurantMenu() {
     try {
       const token = localStorage.getItem('token');
       
-      const res = await fetch('http://localhost:3000/pages/feedback');
+      const res = await fetch('/api/pages/feedback');
       const data = await res.json();
       let existingFeedbacks = [];
       if (data && data.content) {
@@ -86,7 +86,7 @@ export default function RestaurantMenu() {
       };
       existingFeedbacks.unshift(newFeedback);
 
-      const saveRes = await fetch('http://localhost:3000/pages/feedback', {
+      const saveRes = await fetch('/api/pages/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ content: JSON.stringify(existingFeedbacks) })

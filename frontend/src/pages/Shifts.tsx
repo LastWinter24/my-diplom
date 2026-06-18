@@ -52,9 +52,9 @@ export default function Shifts() {
       const token = localStorage.getItem('token');
       
       const [myRes, exchangeRes, profileRes] = await Promise.all([
-        fetch('http://localhost:3000/shifts/my', { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch('http://localhost:3000/shifts/exchange', { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch('http://localhost:3000/profile', { headers: { 'Authorization': `Bearer ${token}` } })
+        fetch('/api/shifts/my', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/shifts/exchange', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` } })
       ]);
 
       if (myRes.ok) setShifts(await myRes.json());
@@ -127,13 +127,13 @@ export default function Shifts() {
       const token = localStorage.getItem('token');
       
       if (!isSick) {
-        await fetch(`http://localhost:3000/shifts/${shift.id}/swap-request`, {
+        await fetch(`/api/shifts/${shift.id}/swap-request`, {
           method: 'PATCH',
           headers: { 'Authorization': `Bearer ${token}` }
         });
       }
 
-      const response = await fetch('http://localhost:3000/tasks/create', {
+      const response = await fetch('/api/tasks/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ title, content, type: 'PROBLEM', priority: isSick ? 'HIGH' : 'MEDIUM' })
@@ -149,7 +149,7 @@ export default function Shifts() {
   const executeTakeExchangeShift = async (shiftId: string) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/shifts/${shiftId}/take`, {
+      const res = await fetch(`/api/shifts/${shiftId}/take`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -167,7 +167,7 @@ export default function Shifts() {
   const executeShiftStatusUpdate = async (id: string, newStatus: 'IN_PROGRESS' | 'COMPLETED') => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/shifts/${id}/status`, {
+      const res = await fetch(`/api/shifts/${id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus })
@@ -310,7 +310,7 @@ export default function Shifts() {
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex items-center gap-3">
                            {shift.employee?.avatarUrl ? (
-                             <img src={`http://localhost:3000${shift.employee.avatarUrl}`} alt="" className="w-10 h-10 rounded-full object-cover border border-white shadow-sm" />
+                             <img src={`/api${shift.employee.avatarUrl}`} alt="" className="w-10 h-10 rounded-full object-cover border border-white shadow-sm" />
                            ) : (
                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border border-white shadow-sm ${getAvatarColor(shift.employee?.fullName || '')}`}>
                                {shift.employee?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}

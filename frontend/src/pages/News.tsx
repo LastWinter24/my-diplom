@@ -88,13 +88,13 @@ export default function News() {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const profileRes = await fetch('http://localhost:3000/profile', { headers: { 'Authorization': `Bearer ${token}` } });
+      const profileRes = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` } });
       if (profileRes.ok) {
         const profileData = await profileRes.json();
         setCurrentUser(profileData.fullName);
         setUserRole(profileData.role); 
       }
-      const newsRes = await fetch('http://localhost:3000/news', { headers: { 'Authorization': `Bearer ${token}` } });
+      const newsRes = await fetch('/api/news', { headers: { 'Authorization': `Bearer ${token}` } });
       if (!newsRes.ok) throw new Error('Не удалось загрузить новости.');
       const newsData = await newsRes.json();
       setNews(newsData);
@@ -120,7 +120,7 @@ export default function News() {
       onConfirm: async () => {
         try {
           const token = localStorage.getItem('token');
-          const res = await fetch(`http://localhost:3000/news/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+          const res = await fetch(`/api/news/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
           if (res.ok) setNews(news.filter(item => item.id !== id)); else alert('Не удалось удалить новость.');
         } catch (e) { alert('Ошибка при удалении.'); }
       }
@@ -133,7 +133,7 @@ export default function News() {
   const handleSaveEdit = async (id: string) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/news/${id}`, {
+      const res = await fetch(`/api/news/${id}`, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ title: editTitle, content: editContent })
       });
       if (res.ok) {
@@ -149,7 +149,7 @@ export default function News() {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/news/create', {
+      const response = await fetch('/api/news/create', {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ title: newTitle, content: newContent })
       });
       if (response.ok) { setNewTitle(''); setNewContent(''); setIsCreateOpen(false); fetchData(); } else { alert('Ошибка при публикации новости.'); }
@@ -219,7 +219,7 @@ export default function News() {
               )}
 
               <div className="flex items-center gap-3 pt-6 border-t border-gray-100 min-w-0">
-                {news[0].author?.avatarUrl ? <img src={`http://localhost:3000${news[0].author.avatarUrl}`} alt="" className="w-10 h-10 rounded-full object-cover shadow-sm flex-shrink-0" /> : <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gradient-to-br from-primary-400 to-primary-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">{getInitials(news[0].author?.fullName)}</div>}
+                {news[0].author?.avatarUrl ? <img src={`/api${news[0].author.avatarUrl}`} alt="" className="w-10 h-10 rounded-full object-cover shadow-sm flex-shrink-0" /> : <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gradient-to-br from-primary-400 to-primary-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">{getInitials(news[0].author?.fullName)}</div>}
                 <div className="flex flex-col min-w-0 flex-1"><span className="text-sm font-bold text-gray-800 break-words min-w-0">{news[0].author?.fullName || 'Администрация'}{currentUser === news[0].author?.fullName && <span className="ml-2 text-[10px] bg-primary-50 text-primary-500 px-2 py-0.5 rounded-md uppercase tracking-wider inline-block">Вы</span>}</span><span className="text-xs text-gray-500">Автор публикации</span></div>
               </div>
             </div>
@@ -254,7 +254,7 @@ export default function News() {
                     )}
 
                     <div className="flex items-center gap-3 pt-4 border-t border-gray-50 mt-auto min-w-0">
-                      {item.author?.avatarUrl ? <img src={`http://localhost:3000${item.author.avatarUrl}`} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" /> : <div className="w-8 h-8 flex-shrink-0 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-xs">{getInitials(item.author?.fullName)}</div>}
+                      {item.author?.avatarUrl ? <img src={`/api${item.author.avatarUrl}`} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" /> : <div className="w-8 h-8 flex-shrink-0 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-xs">{getInitials(item.author?.fullName)}</div>}
                       <span className="text-sm font-medium text-gray-700 min-w-0 flex-1 break-words">{item.author?.fullName || 'Администрация'}{isMyPost && <span className="ml-2 text-[9px] bg-primary-50 text-primary-500 px-1.5 py-0.5 rounded-md uppercase font-bold tracking-wider inline-block">Вы</span>}</span>
                     </div>
                   </div>

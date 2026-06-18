@@ -15,7 +15,7 @@ export default function KnowledgeBase() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3000/pages/home')
+    fetch('/api/pages/home')
       .then(res => res.json())
       .then(data => {
         if (data && data.content) {
