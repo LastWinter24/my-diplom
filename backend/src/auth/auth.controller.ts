@@ -12,17 +12,15 @@ import { Role } from '@prisma/client';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  //ОТПРАВКА КОДА НА ПОЧТУ
-  @Post('send-code')
-  sendVerificationCode(@Body('email') email: string) {
-    return this.authService.sendVerificationCode(email);
-  }
-
+  // ЗАКРЫВАЕМ РЕГИСТРАЦИЮ (Доступно только админам)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @Post('register')
-  register(@Body() dto: RegisterDto & { code: string }) { 
+  register(@Body() dto: RegisterDto) { 
     return this.authService.register(dto);
   }
 
+  // Логин остается открытым для всех
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);

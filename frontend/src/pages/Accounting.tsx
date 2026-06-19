@@ -1,4 +1,3 @@
-// frontend/src/pages/Accounting.tsx
 import { useState, useEffect, useRef } from 'react';
 
 interface AccountingRecord {
@@ -119,23 +118,22 @@ export default function Accounting() {
     <div className="space-y-8 max-w-6xl mx-auto pb-20 animate-fade-in">
       
       {/* ШАПКА И ФИЛЬТРЫ */}
-      <div className="bg-white p-8 md:p-10 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6 relative z-20">
+      <div className="bg-white p-6 md:p-10 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-20">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Учет и Отчеты</h1>
-          <p className="text-gray-500 text-lg">Контроль отработанного времени и расчет зарплаты.</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Учет</h1>
+          <p className="text-gray-500 text-sm md:text-lg">Контроль отработанного времени и расчет зарплаты.</p>
         </div>
         
-        {/* ИЗМЕНЕНО: КАСТОМНЫЕ СЕЛЕКТОРЫ МЕСЯЦА И ГОДА */}
-        <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-200 shadow-inner">
+        <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-200 shadow-inner w-full md:w-auto">
           
           {/* Выбор месяца */}
-          <div className="relative" ref={monthRef}>
+          <div className="relative flex-1 md:flex-none" ref={monthRef}>
             <button 
               onClick={() => { setIsMonthOpen(!isMonthOpen); setIsYearOpen(false); }}
-              className="bg-white border border-gray-200 text-gray-800 font-bold py-2.5 px-4 rounded-xl outline-none hover:bg-gray-50 hover:border-primary-200 focus:ring-2 focus:ring-primary-500 transition-all shadow-sm flex items-center justify-between w-36"
+              className="bg-white border border-gray-200 text-gray-800 font-bold py-2.5 px-4 rounded-xl outline-none hover:bg-gray-50 hover:border-primary-200 focus:ring-2 focus:ring-primary-500 transition-all shadow-sm flex items-center justify-between w-full md:w-36"
             >
-              <span>{MONTHS.find(m => m.value === month)?.label}</span>
-              <svg className={`w-4 h-4 text-gray-400 transition-transform ${isMonthOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              <span className="truncate">{MONTHS.find(m => m.value === month)?.label}</span>
+              <svg className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${isMonthOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             
             {isMonthOpen && (
@@ -154,13 +152,13 @@ export default function Accounting() {
           </div>
 
           {/* Выбор года */}
-          <div className="relative" ref={yearRef}>
+          <div className="relative flex-1 md:flex-none" ref={yearRef}>
             <button 
               onClick={() => { setIsYearOpen(!isYearOpen); setIsMonthOpen(false); }}
-              className="bg-white border border-gray-200 text-gray-800 font-bold py-2.5 px-4 rounded-xl outline-none hover:bg-gray-50 hover:border-primary-200 focus:ring-2 focus:ring-primary-500 transition-all shadow-sm flex items-center justify-between w-28"
+              className="bg-white border border-gray-200 text-gray-800 font-bold py-2.5 px-4 rounded-xl outline-none hover:bg-gray-50 hover:border-primary-200 focus:ring-2 focus:ring-primary-500 transition-all shadow-sm flex items-center justify-between w-full md:w-28"
             >
               <span>{year}</span>
-              <svg className={`w-4 h-4 text-gray-400 transition-transform ${isYearOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              <svg className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${isYearOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             
             {isYearOpen && (
@@ -183,13 +181,13 @@ export default function Accounting() {
 
       {/* СВОДКА */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-        <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 rounded-[2rem] text-white shadow-lg shadow-green-500/20 flex flex-col justify-center">
-          <p className="text-green-100 font-medium uppercase tracking-wider text-sm mb-2">Итого к выплате (Сумма)</p>
-          <p className="text-5xl font-extrabold">{totalPayout.toLocaleString('ru-RU')} <span className="text-2xl font-medium">₽</span></p>
+        <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 md:p-8 rounded-[2rem] text-white shadow-lg shadow-green-500/20 flex flex-col justify-center">
+          <p className="text-green-100 font-medium uppercase tracking-wider text-xs md:text-sm mb-2">Итого к выплате (Сумма)</p>
+          <p className="text-3xl md:text-5xl font-extrabold">{totalPayout.toLocaleString('ru-RU')} <span className="text-xl md:text-2xl font-medium">₽</span></p>
         </div>
-        <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col justify-center">
-          <p className="text-gray-400 font-bold uppercase tracking-wider text-sm mb-2">Отработано всеми сотрудниками</p>
-          <p className="text-5xl font-extrabold text-gray-800">{Math.round(totalHoursAll)} <span className="text-2xl font-medium text-gray-500">часов</span></p>
+        <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col justify-center">
+          <p className="text-gray-400 font-bold uppercase tracking-wider text-xs md:text-sm mb-2">Отработано всеми сотрудниками</p>
+          <p className="text-3xl md:text-5xl font-extrabold text-gray-800">{Math.round(totalHoursAll)} <span className="text-xl md:text-2xl font-medium text-gray-500">часов</span></p>
         </div>
       </div>
 
@@ -201,62 +199,62 @@ export default function Accounting() {
           <div className="p-12 text-center text-gray-400 font-medium">Нет активных сотрудников</div>
         ) : (
           <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[800px]">
+            <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/80">
-                  <th className="p-6 font-bold text-gray-500 uppercase tracking-wider text-xs">Сотрудник</th>
-                  <th className="p-6 font-bold text-gray-500 uppercase tracking-wider text-xs text-center">Отработано</th>
-                  <th className="p-6 font-bold text-gray-500 uppercase tracking-wider text-xs text-center">Ставка (₽/час)</th>
-                  <th className="p-6 font-bold text-gray-500 uppercase tracking-wider text-xs text-right">Сумма к выплате</th>
+                  <th className="p-4 md:p-6 font-bold text-gray-500 uppercase tracking-wider text-[10px] md:text-xs">Сотрудник</th>
+                  <th className="p-4 md:p-6 font-bold text-gray-500 uppercase tracking-wider text-[10px] md:text-xs text-center">Отработано</th>
+                  <th className="p-4 md:p-6 font-bold text-gray-500 uppercase tracking-wider text-[10px] md:text-xs text-center">Ставка (₽/час)</th>
+                  <th className="p-4 md:p-6 font-bold text-gray-500 uppercase tracking-wider text-[10px] md:text-xs text-right">Сумма к выплате</th>
                 </tr>
               </thead>
               <tbody>
                 {records.map((rec) => (
                   <tr key={rec.id} className="border-t border-gray-100 hover:bg-gray-50/50 transition-colors">
-                    <td className="p-6">
-                      <div className="flex items-center gap-4">
+                    <td className="p-4 md:p-6">
+                      <div className="flex items-center gap-3 md:gap-4">
                         {rec.avatarUrl ? (
-                          <img src={`/api${rec.avatarUrl}`} className="w-12 h-12 rounded-full object-cover border border-gray-100 shadow-sm" alt="" />
+                          <img src={`/api${rec.avatarUrl}`} className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-gray-100 shadow-sm flex-shrink-0" alt="" />
                         ) : (
-                          <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-sm ${getAvatarColor(rec.fullName)}`}>
+                          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-base md:text-lg shadow-sm flex-shrink-0 ${getAvatarColor(rec.fullName)}`}>
                             {rec.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}
                           </div>
                         )}
-                        <div>
-                          <p className="font-extrabold text-gray-900 text-lg">{rec.fullName}</p>
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mt-0.5">{rec.position || getRoleName(rec.role)}</p>
+                        <div className="min-w-0">
+                          <p className="font-extrabold text-gray-900 text-sm md:text-lg truncate">{rec.fullName}</p>
+                          <p className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-wider mt-0.5 truncate">{rec.position || getRoleName(rec.role)}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-6 text-center">
-                      <span className="font-bold text-gray-800 text-xl">{rec.totalHours}</span>
-                      <span className="text-gray-400 text-sm ml-1">ч.</span>
+                    <td className="p-4 md:p-6 text-center">
+                      <span className="font-bold text-gray-800 text-base md:text-xl">{rec.totalHours}</span>
+                      <span className="text-gray-400 text-xs md:text-sm ml-1">ч.</span>
                     </td>
-                    <td className="p-6 text-center">
+                    <td className="p-4 md:p-6 text-center">
                       {editingRateId === rec.id ? (
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1 md:gap-2">
                           <input 
                             type="number" 
                             autoFocus
                             value={tempRate} 
                             onChange={e => setTempRate(e.target.value)} 
-                            className="w-24 text-center px-3 py-2 border border-green-500 rounded-lg outline-none focus:ring-2 focus:ring-green-200 font-bold"
+                            className="w-16 md:w-24 text-center px-2 py-1.5 md:px-3 md:py-2 border border-green-500 rounded-lg outline-none focus:ring-2 focus:ring-green-200 font-bold text-sm md:text-base"
                           />
-                          <button onClick={() => handleSaveRate(rec.id)} className="bg-green-100 text-green-700 p-2 rounded-lg hover:bg-green-200 transition-colors shadow-sm">✓</button>
-                          <button onClick={() => setEditingRateId(null)} className="bg-gray-100 text-gray-600 p-2 rounded-lg hover:bg-gray-200 transition-colors shadow-sm">✕</button>
+                          <button onClick={() => handleSaveRate(rec.id)} className="bg-green-100 text-green-700 p-1.5 md:p-2 rounded-lg hover:bg-green-200 transition-colors shadow-sm">✓</button>
+                          <button onClick={() => setEditingRateId(null)} className="bg-gray-100 text-gray-600 p-1.5 md:p-2 rounded-lg hover:bg-gray-200 transition-colors shadow-sm">✕</button>
                         </div>
                       ) : (
                         <div 
                           onClick={() => { setEditingRateId(rec.id); setTempRate(rec.hourlyRate.toString()); }}
-                          className="inline-flex items-center gap-2 cursor-pointer group px-4 py-2 hover:bg-gray-100 rounded-xl transition-colors"
+                          className="inline-flex items-center gap-1 md:gap-2 cursor-pointer group px-2 py-1.5 md:px-4 md:py-2 hover:bg-gray-100 rounded-xl transition-colors"
                         >
-                          <span className="font-bold text-gray-800 text-lg">{rec.hourlyRate} ₽</span>
-                          <svg className="w-4 h-4 text-gray-300 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                          <span className="font-bold text-gray-800 text-sm md:text-lg whitespace-nowrap">{rec.hourlyRate} ₽</span>
+                          <svg className="w-3 h-3 md:w-4 md:h-4 text-gray-300 group-hover:text-primary-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </div>
                       )}
                     </td>
-                    <td className="p-6 text-right">
-                      <span className="font-extrabold text-green-600 text-2xl bg-green-50 px-4 py-2 rounded-xl">
+                    <td className="p-4 md:p-6 text-right">
+                      <span className="font-extrabold text-green-600 text-sm md:text-2xl bg-green-50 px-2 py-1 md:px-4 md:py-2 rounded-xl whitespace-nowrap">
                         {rec.totalSalary.toLocaleString('ru-RU')} ₽
                       </span>
                     </td>

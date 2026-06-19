@@ -1,4 +1,3 @@
-// frontend/src/components/Layout.tsx
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast'; 
@@ -27,7 +26,6 @@ export default function Layout() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [readNotifIds, setReadNotifIds] = useState<string[]>(JSON.parse(localStorage.getItem('readNotifs') || '[]'));
   
-  //Состояние для открытия/закрытия бокового меню (открыто по умолчанию на ПК, закрыто на мобилках)
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
 
   const notifRef = useRef<HTMLDivElement>(null);
@@ -42,7 +40,6 @@ export default function Layout() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Вынесли загрузку уведомлений в отдельную функцию, чтобы таймер всегда получал свежие данные
   const loadNotifications = async (roleToCheck: string) => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -137,7 +134,6 @@ export default function Layout() {
     setNotifications(generatedNotifs);
   };
 
-  //Загрузка профиля при входе
   useEffect(() => {
     const initApp = async () => {
       try {
@@ -162,9 +158,8 @@ export default function Layout() {
     initApp();
   }, []);
 
-  //Запуск таймера для реального времени
   useEffect(() => {
-    if (!userRole) return; // Ждем, пока загрузится профиль
+    if (!userRole) return;
 
     const pollingInterval = setInterval(() => {
       loadNotifications(userRole);
@@ -173,7 +168,6 @@ export default function Layout() {
     return () => clearInterval(pollingInterval);
   }, [userRole]);
 
-  //Закрываем меню на телефонах после клика по ссылке
   const handleNavClick = () => {
     if (window.innerWidth < 768) {
       setIsSidebarOpen(false);
@@ -199,7 +193,7 @@ export default function Layout() {
       localStorage.setItem('readNotifs', JSON.stringify(newReadIds));
     }
     setIsNotifOpen(false); 
-    handleNavClick(); // Закрываем меню на телефонах
+    handleNavClick();
     navigate(notif.link, { state: { activeTab: notif.tab, scrollToId: notif.targetId } });
   };
 
@@ -258,7 +252,6 @@ export default function Layout() {
         }}
       />
 
-      {/* ТЕМНЫЙ ФОН ДЛЯ МОБИЛЬНЫХ (при открытом меню) */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-30 md:hidden animate-fade-in"
@@ -266,7 +259,6 @@ export default function Layout() {
         ></div>
       )}
 
-      {/* БОКОВОЕ МЕНЮ (САЙДБАР) */}
       <aside className={`
         fixed md:relative inset-y-0 left-0 z-40 bg-white border-r border-gray-100 flex flex-col shadow-2xl md:shadow-sm w-64 transform transition-all duration-300 ease-in-out flex-shrink-0
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:-ml-64'}
@@ -297,7 +289,7 @@ export default function Layout() {
           {(userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'MANAGER') && (
             <Link to="/accounting" onClick={handleNavClick} className={getLinkClass('/accounting')}>
               <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-              Учет и ЗП
+              Учет
             </Link>
           )}
 
@@ -336,8 +328,8 @@ export default function Layout() {
 
       <main className="flex-1 relative flex flex-col h-screen overflow-hidden w-full bg-transparent z-10">
         
-        {/* ЕДИНАЯ КНОПКА ГАМБУРГЕР (Для телефонов и ПК) */}
-        <div className="absolute top-4 left-4 md:top-6 md:left-8 z-20">
+        {/* z-[100] чтобы кнопка была поверх карточек */}
+        <div className="absolute top-4 left-4 md:top-6 md:left-8 z-[100]">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 bg-white rounded-lg shadow-sm border border-gray-100 text-gray-600 hover:text-primary-500 focus:outline-none transition-colors"
@@ -347,8 +339,8 @@ export default function Layout() {
           </button>
         </div>
 
-        {/* ШАПКА: УВЕДОМЛЕНИЯ И ПРОФИЛЬ */}
-        <div className="absolute top-4 right-4 md:top-6 md:right-8 z-20 flex items-center gap-3 md:gap-5">
+        {/* z-[100] чтобы шапка и уведомления были поверх карточек */}
+        <div className="absolute top-4 right-4 md:top-6 md:right-8 z-[100] flex items-center gap-3 md:gap-5">
           <div className="relative" ref={notifRef}>
             <button 
               onClick={() => setIsNotifOpen(!isNotifOpen)} 
@@ -361,15 +353,15 @@ export default function Layout() {
             </button>
 
             {isNotifOpen && (
-              <div className="absolute right-0 mt-3 w-[calc(100vw-2rem)] sm:w-80 md:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in origin-top-right">
-                <div className="p-3 md:p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+              <div className="fixed left-4 right-4 top-20 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-3 sm:w-96 max-h-[80vh] flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-fade-in z-[120]">
+                <div className="p-3 md:p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50 flex-shrink-0">
                   <h3 className="font-bold text-gray-800 text-sm md:text-base">Уведомления</h3>
                   {unreadCount > 0 && (
                     <button onClick={markAllAsRead} className="text-[10px] md:text-xs font-bold text-primary-500 hover:text-primary-700 transition-colors">Прочитать все</button>
                   )}
                 </div>
                 
-                <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
+                <div className="overflow-y-auto custom-scrollbar flex-1">
                   {displayNotifs.length === 0 ? (
                     <div className="p-8 text-center text-gray-400 text-sm">У вас пока нет уведомлений.</div>
                   ) : (
@@ -388,7 +380,7 @@ export default function Layout() {
                                 {new Date(notif.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
                               </span>
                             </div>
-                            <p className={`text-[10px] md:text-xs leading-relaxed break-words ${notif.isRead ? 'text-gray-500' : 'text-gray-700'}`}>{notif.message}</p>
+                            <p className={`text-[10px] md:text-xs leading-relaxed break-words whitespace-normal ${notif.isRead ? 'text-gray-500' : 'text-gray-700'}`}>{notif.message}</p>
                           </div>
                         </div>
                       ))}
@@ -408,7 +400,6 @@ export default function Layout() {
           </div>
         </div>
 
-        {/* КОНТЕНТ */}
         <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-8 pt-20 md:pt-24 custom-scrollbar">
           <Outlet />
         </div>

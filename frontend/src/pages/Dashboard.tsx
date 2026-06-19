@@ -1,11 +1,9 @@
-// frontend/src/pages/Dashboard.tsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 interface Memo { id: string; title: string; content: string; }
 interface ManagementMember { id: string; userId: string; fullName: string; position?: string; avatarUrl?: string | null; }
 
-//Интерфейс для динамических ссылок
 interface UsefulLink { id: string; title: string; url: string; icon: string; colorClass: string; }
 
 interface HomeData { 
@@ -17,7 +15,6 @@ interface HomeData {
   links?: UsefulLink[]; 
 }
 
-// Расшифровка кодов погоды
 const getWeatherInfo = (code: number) => {
   if (code === 0) return { text: 'Ясно', icon: '☀️' };
   if (code >= 1 && code <= 3) return { text: 'Облачно', icon: '⛅' };
@@ -42,7 +39,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Состояния погоды
   const [isWeatherExpanded, setIsWeatherExpanded] = useState(false);
   const [location, setLocation] = useState({ name: 'Мантурово', lat: 58.33, lon: 44.76 });
   const [currentWeather, setCurrentWeather] = useState<any>(null);
@@ -51,7 +47,6 @@ export default function Dashboard() {
   const [weeklyWeather, setWeeklyWeather] = useState<any[]>([]);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   
-  // Поиск городов
   const [isSearchingCity, setIsSearchingCity] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>(DEFAULT_CITIES);
@@ -72,7 +67,6 @@ export default function Dashboard() {
       }).catch(() => setLoading(false));
   }, []);
 
-  // Загрузка погоды
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -143,7 +137,7 @@ export default function Dashboard() {
   const content = data || { title: 'Добро пожаловать', subtitle: 'Портал', welcomeText: '', memos: [], management: [], links: [] };
   const memos = content.memos || [];
   const management = content.management || [];
-  const links = content.links || []; // Читаем сохраненные ссылки
+  const links = content.links || []; 
   
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % memos.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + memos.length) % memos.length);
@@ -151,52 +145,49 @@ export default function Dashboard() {
   return (
     <div className="max-w-5xl mx-auto space-y-10 pb-20 overflow-x-hidden animate-fade-in">
       
-      {/* 1. БАННЕР */}
-      <div className="bg-slate-900 rounded-[2rem] shadow-xl border border-slate-800 p-10 md:p-16 flex flex-col items-center text-center relative overflow-hidden">
-        {/* Фирменное мягкое свечение (как на карточке меню) */}
+      {/* БАННЕР */}
+      <div className="bg-slate-900 rounded-[2rem] shadow-xl border border-slate-800 p-8 md:p-16 flex flex-col items-center text-center relative overflow-hidden">
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-primary-500/20 rounded-full blur-[80px] pointer-events-none"></div>
         <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-slate-700/30 rounded-full blur-[80px] pointer-events-none"></div>
         
-        <div className="relative z-10 flex flex-col items-center">
-          <p className="text-gray-400 font-extrabold uppercase tracking-widest text-sm mb-4 bg-slate-800/80 border border-slate-700 px-4 py-1.5 rounded-lg inline-block shadow-sm">
+        <div className="relative z-10 flex flex-col items-center w-full">
+          <p className="text-gray-400 font-extrabold uppercase tracking-widest text-xs md:text-sm mb-4 bg-slate-800/80 border border-slate-700 px-4 py-1.5 rounded-lg inline-block shadow-sm">
             {content.subtitle}
           </p>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6 leading-tight max-w-4xl text-balance w-full px-4 drop-shadow-md">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight max-w-4xl text-balance w-full px-2 md:px-4 drop-shadow-md break-words">
             {content.title}
           </h1>
-          {/* ИЗМЕНЕНО: Рендер HTML из ReactQuill (С учетом темного фона!) */}
           <div 
-            className="text-lg text-gray-400 max-w-2xl font-medium leading-relaxed custom-html-content [&_strong]:text-white"
+            className="text-base md:text-lg text-gray-400 max-w-2xl w-full px-2 md:px-4 font-medium leading-relaxed custom-html-content [&_strong]:text-white break-words whitespace-normal overflow-hidden"
             dangerouslySetInnerHTML={{ __html: content.welcomeText }}
           />
         </div>
       </div>
 
-      {/* 2. КАРУСЕЛЬ ПАМЯТОК */}
+      {/* КАРУСЕЛЬ ПАМЯТОК */}
       {memos.length > 0 && (
         <div className="relative max-w-4xl mx-auto">
           <div className="relative bg-primary-500 rounded-[1.5rem] shadow-lg shadow-primary-500/30 px-12 py-10 min-h-[160px] flex items-center justify-center text-white overflow-hidden">
-            <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 p-2 hover:scale-110 transition-all z-20 outline-none"><svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg></button>
+            <button onClick={prevSlide} className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-2 hover:scale-110 transition-all z-20 outline-none"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg></button>
             <div className="w-full overflow-hidden">
               <div className="flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
                 {memos.map((memo) => (
-                  <div key={memo.id} className="w-full flex-shrink-0 text-center px-4 md:px-8">
-                    <p className="text-sm font-medium mb-1 uppercase tracking-wider opacity-90">{memo.title}</p>
-                    {/* ИЗМЕНЕНО: Рендер HTML (С учетом яркого фона!) */}
+                  <div key={memo.id} className="w-full flex-shrink-0 text-center px-2 md:px-8">
+                    <p className="text-xs md:text-sm font-medium mb-1 uppercase tracking-wider opacity-90 break-words">{memo.title}</p>
                     <div 
-                      className="text-2xl md:text-3xl font-bold custom-html-content [&_strong]:text-white [&_p]:mb-1"
+                      className="text-xl md:text-3xl font-bold custom-html-content [&_strong]:text-white [&_p]:mb-1 break-words whitespace-normal"
                       dangerouslySetInnerHTML={{ __html: memo.content }}
                     />
                   </div>
                 ))}
               </div>
             </div>
-            <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:scale-110 transition-all z-20 outline-none"><svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg></button>
+            <button onClick={nextSlide} className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-2 hover:scale-110 transition-all z-20 outline-none"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg></button>
           </div>
         </div>
       )}
 
-      {/* 3. СЕТКА ВИДЖЕТОВ */}
+      {/* СЕТКА ВИДЖЕТОВ */}
       <div className={`flex flex-col md:flex-row w-full overflow-hidden pt-4 relative transition-all duration-700 ${isWeatherExpanded ? 'gap-0' : 'gap-6'}`}>
         
         {/* ВИДЖЕТ ПОГОДЫ */}
@@ -205,7 +196,6 @@ export default function Dashboard() {
             ${isWeatherExpanded ? 'w-full p-6 md:p-8' : 'w-full md:w-[calc(33.333%-1rem)] p-6'}
           `}
         >
-          {/* Шапка с кнопками */}
           <div className="flex items-center justify-between mb-4 gap-4 relative">
             <div className="relative flex-1 min-w-0">
               <button onClick={() => setIsSearchingCity(!isSearchingCity)} className="w-full text-left flex items-center gap-1.5 group outline-none">
@@ -217,7 +207,7 @@ export default function Dashboard() {
               </button>
               
               {isSearchingCity && (
-                <div className="absolute top-full mt-3 left-0 bg-white shadow-2xl border border-gray-100 p-3 rounded-2xl w-72 z-50 animate-fade-in">
+                <div className="absolute top-full mt-3 left-0 bg-white shadow-2xl border border-gray-100 p-3 rounded-2xl w-[90vw] sm:w-72 z-50 animate-fade-in max-w-[300px]">
                   <input autoFocus value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Поиск города..." className="w-full px-4 py-3 bg-gray-50 focus:border-primary-300 rounded-xl outline-none text-sm mb-2" />
                   <ul className="max-h-56 overflow-y-auto pr-1 custom-scrollbar">
                     {searchQuery.length === 0 && <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-1">Популярные</p>}
@@ -255,11 +245,10 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Карточки 2x2 */}
             <div className={`transition-all duration-700 ease-in-out overflow-hidden flex-shrink-0
               ${isWeatherExpanded ? 'max-h-[500px] opacity-100 md:max-w-[360px] w-full mt-4 md:mt-0' : 'max-h-0 md:max-w-0 opacity-0 w-0 m-0'}
             `}>
-              <div className="grid grid-cols-2 gap-3 min-w-[280px]">
+              <div className="grid grid-cols-2 gap-3 min-w-full sm:min-w-[280px]">
                 <div className="flex items-center gap-3 bg-orange-50/70 border border-orange-100/50 p-3 rounded-2xl">
                    <div className="w-10 h-10 bg-white rounded-[10px] flex items-center justify-center text-xl shadow-sm text-orange-500">🌡️</div>
                    <div className="flex flex-col">
@@ -292,13 +281,12 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Расширенная версия: График + 10 Дней */}
           {isWeatherExpanded && (
             <div className="flex flex-col mt-8 animate-fade-in">
-              <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-4 md:p-5 mb-8 shadow-inner">
+              <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-4 md:p-5 mb-8 shadow-inner w-full">
                 <div className="flex justify-between items-center mb-4 px-1">
-                  <h4 className="font-bold text-gray-800 text-lg">Почасовой прогноз</h4>
-                  <span className="text-sm font-bold text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg">
+                  <h4 className="font-bold text-gray-800 text-sm sm:text-lg">Почасовой прогноз</h4>
+                  <span className="text-xs sm:text-sm font-bold text-primary-600 bg-primary-50 px-2 sm:px-3 py-1.5 rounded-lg">
                     {weeklyWeather[selectedDayIndex]?.fullDateStr || ''}
                   </span>
                 </div>
@@ -327,7 +315,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="pb-2">
+              <div className="pb-2 w-full">
                 <h4 className="text-sm font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">Прогноз на 10 дней</h4>
                 <div className="flex gap-3 overflow-x-auto pt-2 pb-4 px-1 custom-scrollbar">
                   {weeklyWeather.map((day, idx) => {
@@ -368,27 +356,21 @@ export default function Dashboard() {
         {/* ДИНАМИЧЕСКИЕ ССЫЛКИ И РУКОВОДСТВО */}
         <div className={`transition-all duration-700 ease-in-out flex flex-col md:flex-row gap-6 flex-shrink-0 mt-6 md:mt-0 ${isWeatherExpanded ? 'w-0 opacity-0 translate-x-20 pointer-events-none absolute' : 'w-full md:w-[calc(66.666%-0.5rem)] opacity-100 translate-x-0 relative'}`}>
           
-          {/* ССЫЛКИ: Теперь загружаются из базы данных! */}
           <div className="w-full md:w-1/2 bg-white p-6 md:p-8 rounded-[1.5rem] shadow-sm border border-gray-100 min-w-[200px] flex flex-col">
             <h3 className="font-bold text-gray-900 text-xl mb-6">Полезные ссылки</h3>
             <ul className="space-y-4 overflow-y-auto custom-scrollbar pr-2 max-h-[220px]">
               {links.length > 0 ? links.map(link => {
-                // УМНАЯ ПРОВЕРКА ССЫЛОК
                 let isExternal = false;
                 let navPath = link.url;
 
-                // Если ссылка начинается с http/https
                 if (navPath.startsWith('http')) {
-                  // Проверяем, содержит ли она наш текущий домен (например, localhost:5173)
                   if (navPath.includes(window.location.host)) {
-                    // Это наш сайт! Отрезаем домен, чтобы оставить только путь (например, /menu)
                     try {
                       navPath = new URL(navPath).pathname;
                     } catch (e) {
-                      navPath = '/'; // На случай кривой ссылки
+                      navPath = '/'; 
                     }
                   } else {
-                    // Это реально чужой сайт
                     isExternal = true;
                   }
                 }
@@ -418,7 +400,6 @@ export default function Dashboard() {
             </ul>
           </div>
 
-          {/* РУКОВОДСТВО */}
           <div className="w-full md:w-1/2 bg-white p-6 md:p-8 rounded-[1.5rem] shadow-sm border border-gray-100 min-w-[200px] flex flex-col">
             <h3 className="font-bold text-gray-900 text-xl mb-6">Руководство</h3>
             <div className="space-y-4 overflow-y-auto custom-scrollbar pr-2 max-h-[220px]">
@@ -431,9 +412,9 @@ export default function Dashboard() {
                       {manager.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2)}
                     </div>
                   )}
-                  <div>
-                    <p className="text-sm font-bold text-gray-800 line-clamp-1">{manager.fullName}</p>
-                    <p className="text-xs text-gray-500 font-medium line-clamp-1">{manager.position || 'Сотрудник'}</p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-gray-800 line-clamp-1 truncate">{manager.fullName}</p>
+                    <p className="text-xs text-gray-500 font-medium line-clamp-1 truncate">{manager.position || 'Сотрудник'}</p>
                   </div>
                 </div>
               )) : (
